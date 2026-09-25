@@ -1,0 +1,1099 @@
+/* =========================================================
+   MAFI Layout System v24 — single source of truth
+   Mobile-first · lobby tabs · game dock · host-only QR
+   ========================================================= */
+
+:root {
+  --pad: clamp(0.55rem, 2.4vw, 1rem);
+  --gap: clamp(0.5rem, 1.6vw, 0.85rem);
+  --card-r: 14px;
+  --fab: 2.85rem;
+}
+
+html,
+body {
+  height: 100%;
+  height: var(--app-height, 100dvh);
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.screen {
+  position: fixed;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  min-height: 0;
+  height: var(--app-height, 100dvh);
+  max-height: var(--app-height, 100dvh);
+  overflow: hidden;
+  padding: var(--safe-top, 0px) var(--safe-right, 0px) var(--safe-bottom, 0px) var(--safe-left, 0px);
+  box-sizing: border-box;
+}
+
+.screen.active {
+  display: flex;
+  animation: screenEnter 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes screenEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========== HOME ========== */
+#screen-home.active {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  justify-content: flex-start;
+}
+
+#screen-home .home-content {
+  width: min(100% - 2 * var(--pad), 400px);
+  margin: 0 auto;
+  padding: clamp(0.9rem, 3.5vh, 1.75rem) var(--pad) calc(1.4rem + var(--safe-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+#screen-home .brand-mark {
+  text-align: center;
+}
+
+#screen-home .brand-mafi {
+  display: block;
+  font-size: clamp(2.25rem, 10vw, 3.4rem);
+  line-height: 1.05;
+  letter-spacing: 0.06em;
+}
+
+#screen-home .brand-fa {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: clamp(0.9rem, 3.4vw, 1.1rem);
+}
+
+#screen-home .brand-credit {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.72rem;
+  opacity: 0.72;
+}
+
+#screen-home .home-tagline {
+  text-align: center;
+  margin: 0;
+  font-size: clamp(0.82rem, 3vw, 0.95rem);
+  color: var(--muted);
+}
+
+#screen-home .invite-join-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.18), rgba(80, 40, 20, 0.35));
+  border: 1px solid rgba(201, 168, 76, 0.45);
+  color: var(--text);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+#screen-home .invite-join-banner strong {
+  color: var(--gold);
+  font-size: 0.95rem;
+}
+
+#screen-home .join-hint {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+#screen-home .code-input.code-locked {
+  opacity: 0.92;
+  border-color: rgba(201, 168, 76, 0.55);
+  background: rgba(201, 168, 76, 0.08);
+  cursor: default;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  text-align: center;
+}
+
+body.invite-join #screen-home #btn-join {
+  min-width: 6.5rem;
+  font-weight: 800;
+}
+
+body.invite-join #screen-home .form-card label::after {
+  content: " (الزامی · یکتا)";
+  color: var(--gold);
+  font-size: 0.75em;
+}
+
+#screen-home .home-forms,
+#screen-home .home-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+#screen-home .form-card label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+#screen-home .form-card input,
+#screen-home .code-input,
+#screen-home #room-password {
+  width: 100%;
+  min-height: 2.75rem;
+  font-size: 1rem;
+}
+
+#screen-home .join-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.45rem;
+}
+
+#screen-home .join-row .code-input {
+  min-width: 0;
+}
+
+#screen-home #btn-create {
+  width: 100%;
+  min-height: 3rem;
+  font-size: 1.05rem;
+}
+
+#screen-home .avatar-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  max-height: 6.5rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.2rem;
+}
+
+#screen-home .home-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+}
+
+#screen-home .home-footer .btn {
+  width: 100%;
+  min-height: 2.6rem;
+  font-size: 0.8rem;
+  justify-content: center;
+}
+
+/* ========== LOBBY ========== */
+#screen-lobby.active {
+  overflow: hidden;
+}
+
+#screen-lobby .top-bar {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 0.45rem var(--pad);
+  z-index: 8;
+}
+
+#screen-lobby .room-badge {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+#screen-lobby .invite-panel {
+  flex-shrink: 0;
+  width: calc(100% - 2 * var(--pad));
+  max-width: 1100px;
+  margin: 0.35rem auto 0;
+  padding: 0;
+  border-radius: var(--card-r);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  overflow: hidden;
+  z-index: 7;
+}
+
+#screen-lobby .invite-summary {
+  display: flex;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  color: var(--gold);
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+#screen-lobby .invite-summary::-webkit-details-marker {
+  display: none;
+}
+
+#screen-lobby .invite-summary-sub {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.7rem;
+}
+
+#screen-lobby .invite-body {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.75rem 0.7rem;
+  border-top: 1px solid rgba(201, 168, 76, 0.18);
+}
+
+#screen-lobby .invite-qr-wrap {
+  flex: 0 0 auto;
+  padding: 0.25rem;
+  background: #fff;
+  border-radius: 8px;
+  line-height: 0;
+}
+
+body.lobby-is-host #screen-lobby .invite-panel[open] .invite-qr-wrap img {
+  width: min(38vw, 128px);
+  height: min(38vw, 128px);
+  display: block;
+  object-fit: contain;
+}
+
+@media (min-width: 861px) {
+  body.lobby-is-host #screen-lobby .invite-qr-wrap img {
+    width: 112px;
+    height: 112px;
+  }
+}
+
+#screen-lobby .invite-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+#screen-lobby .invite-title {
+  margin: 0 0 0.15rem;
+  font-size: 0.85rem;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+#screen-lobby .invite-hint {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+#screen-lobby .invite-url {
+  display: block;
+  margin: 0 0 0.4rem;
+  padding: 0.3rem 0.4rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.68rem;
+  direction: ltr;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#screen-lobby .invite-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+#screen-lobby .invite-actions .btn {
+  font-size: 0.72rem;
+  padding: 0.35rem 0.55rem;
+}
+
+#screen-lobby .invite-password-notice {
+  margin: 0 0 0.35rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 8px;
+  background: rgba(220, 38, 38, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  color: #fecaca;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+body:not(.lobby-is-host) .invite-host-only {
+  display: none !important;
+}
+
+body.lobby-is-host .invite-guest-only {
+  display: none !important;
+}
+
+#screen-lobby .invite-guest-only strong {
+  color: var(--gold);
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+}
+
+/* Lobby tabs — mobile only */
+#screen-lobby .lobby-tabs {
+  display: none;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  margin: 0;
+  padding: 0.35rem var(--pad) 0;
+  gap: 0.35rem;
+  background: linear-gradient(180deg, rgba(12, 10, 10, 0.98), rgba(12, 10, 10, 0.92));
+  border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+#screen-lobby .lobby-tab {
+  flex: 1;
+  min-height: 2.35rem;
+  border: 1px solid rgba(201, 168, 76, 0.22);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#screen-lobby .lobby-tab.active {
+  color: #0f0a04;
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  border-color: rgba(255, 220, 140, 0.55);
+  box-shadow: 0 2px 10px rgba(201, 168, 76, 0.25);
+}
+
+#screen-lobby .settings-panel.settings-readonly::before {
+  content: "فقط مشاهده — ویرایش با میزبان";
+  display: block;
+  margin: -0.15rem 0 0.55rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+#screen-lobby .settings-panel.settings-readonly {
+  opacity: 0.94;
+}
+
+/* Gold buttons — stronger contrast on dark UI */
+.btn-gold,
+#screen-home .btn-gold,
+#screen-lobby .btn-gold,
+#screen-game .btn-gold {
+  color: #0a0704;
+  font-weight: 800;
+  text-shadow: 0 1px 0 rgba(255, 235, 180, 0.35);
+  border: 1px solid rgba(255, 220, 140, 0.42);
+}
+
+.btn-gold:disabled {
+  opacity: 0.55;
+  color: #1a1208;
+}
+
+/* Main scroll: players / settings / chat */
+#screen-lobby .lobby-main {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
+#screen-lobby .lobby-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap);
+  padding: var(--gap) var(--pad);
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  align-content: start;
+}
+
+#screen-lobby .panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 0.75rem;
+  border-radius: var(--card-r);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+}
+
+#screen-lobby .panel h2 {
+  margin: 0 0 0.55rem;
+  font-size: 0.95rem;
+}
+
+#screen-lobby .players-list {
+  display: flex !important;
+  flex-direction: column;
+  gap: 0.4rem;
+  overflow: visible;
+  max-height: none;
+}
+
+#screen-lobby .settings-panel .setting.checks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+}
+
+#screen-lobby .chat-panel .chat-log {
+  min-height: 7rem;
+  max-height: 12rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Sticky start CTA — always visible, never eats the whole screen */
+#screen-lobby .lobby-start-bar {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "info actions"
+    "hint hint";
+  gap: 0.3rem 0.55rem;
+  align-items: center;
+  padding: 0.55rem var(--pad) calc(0.55rem + var(--safe-bottom, 0px));
+  margin: 0;
+  width: 100%;
+  max-width: none;
+  background: linear-gradient(180deg, rgba(28, 18, 12, 0.96), rgba(10, 8, 8, 0.98));
+  border-top: 1px solid rgba(201, 168, 76, 0.35);
+  border-bottom: none;
+  z-index: 9;
+  box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.35);
+}
+
+#screen-lobby .lobby-start-info {
+  grid-area: info;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+#screen-lobby .lobby-start-info #host-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#screen-lobby #ready-label {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--gold);
+}
+
+#screen-lobby .lobby-start-actions {
+  grid-area: actions;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+#screen-lobby .lobby-start-bar #btn-start {
+  min-width: 0;
+  min-height: 2.65rem;
+  padding: 0.5rem 0.95rem;
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
+#screen-lobby .lobby-start-bar #btn-claim-host {
+  font-size: 0.65rem;
+  padding: 0.35rem 0.45rem;
+  white-space: nowrap;
+}
+
+#screen-lobby .lobby-start-bar .hint {
+  grid-area: hint;
+  width: auto;
+  margin: 0;
+  text-align: start;
+  font-size: 0.68rem;
+  opacity: 0.85;
+}
+
+/* ========== GAME ========== */
+#screen-game.active {
+  overflow: hidden;
+}
+
+#screen-game .top-bar,
+#screen-game .narrator,
+#screen-game .speak-bar {
+  flex-shrink: 0;
+}
+
+#screen-game .game-bar {
+  padding: 0.45rem var(--pad);
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+#screen-game .narrator {
+  margin: 0.4rem var(--pad);
+  padding: 0.55rem 0.7rem;
+  min-height: 0;
+}
+
+#screen-game .speak-bar {
+  margin: 0 var(--pad) 0.4rem;
+  padding: 0.5rem 0.65rem;
+  flex-wrap: wrap;
+}
+
+#screen-game .game-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: minmax(8rem, 40%) minmax(0, 1fr);
+  gap: var(--gap);
+  padding: 0 var(--pad) calc(4.5rem + var(--safe-bottom, 0px));
+  overflow: hidden;
+}
+
+/* Mobile game dock — replaces scattered FABs */
+#screen-game .game-mobile-dock {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  #screen-lobby .lobby-tabs {
+    display: flex;
+  }
+
+  #screen-lobby .lobby-pane {
+    display: none !important;
+  }
+
+  #screen-lobby[data-lobby-tab="players"] .lobby-pane[data-lobby-pane="players"],
+  #screen-lobby[data-lobby-tab="settings"] .lobby-pane[data-lobby-pane="settings"],
+  #screen-lobby[data-lobby-tab="chat"] .lobby-pane[data-lobby-pane="chat"] {
+    display: flex !important;
+  }
+
+  #screen-lobby .lobby-main {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  #screen-lobby .lobby-grid {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  #screen-lobby .chat-panel .chat-log {
+    max-height: min(42vh, 16rem);
+  }
+
+  #screen-game.active .game-mobile-dock {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 7700;
+    align-items: stretch;
+    justify-content: space-around;
+    gap: 0.15rem;
+    padding: 0.35rem var(--pad) calc(0.35rem + var(--safe-bottom, 0px));
+    background: linear-gradient(180deg, rgba(18, 12, 10, 0.94), rgba(8, 6, 8, 0.98));
+    border-top: 1px solid rgba(201, 168, 76, 0.35);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.45);
+  }
+
+  #screen-game .game-mobile-dock .dock-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.12rem;
+    min-height: 2.85rem;
+    border: 1px solid rgba(201, 168, 76, 0.18);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  #screen-game .game-mobile-dock .dock-btn span {
+    font-size: 0.62rem;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  #screen-game .game-mobile-dock .dock-btn.active {
+    border-color: rgba(201, 168, 76, 0.55);
+    background: rgba(201, 168, 76, 0.12);
+  }
+
+  #screen-game .game-mobile-dock .dock-leave {
+    border-color: rgba(220, 38, 38, 0.35);
+    color: #fca5a5;
+  }
+
+  #screen-game .game-body {
+    padding-bottom: calc(3.65rem + var(--safe-bottom, 0px));
+  }
+
+  #screen-game.active .leave-fab,
+  #screen-game .chat-fab,
+  #screen-game .mic-fab,
+  #screen-game .mic-dock,
+  #screen-game .my-role-chip {
+    display: none !important;
+  }
+
+  #screen-game .game-chat {
+    bottom: calc(3.35rem + var(--safe-bottom, 0px));
+    max-height: min(40vh, 17rem);
+  }
+}
+
+#screen-game .game-players {
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 0.45rem;
+  align-content: start;
+}
+
+#screen-game .game-side,
+#screen-game .game-chat {
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#screen-game .game-chat .chat-log {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+#screen-game .btn-leave#btn-leave-game {
+  display: none;
+}
+
+#screen-game.active .leave-fab {
+  display: inline-flex !important;
+  width: var(--fab);
+  height: var(--fab);
+  padding: 0;
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  right: calc(var(--pad) + var(--safe-right, 0px));
+  left: auto;
+  bottom: calc(var(--fab) + 1.05rem + var(--safe-bottom, 0px));
+  z-index: 7600;
+}
+
+@media (min-width: 861px) {
+  #screen-lobby .lobby-tabs {
+    display: none !important;
+  }
+
+  #screen-lobby .lobby-pane {
+    display: flex !important;
+  }
+}
+
+#screen-game .leave-fab .leave-fab-label {
+  display: none;
+}
+
+.chat-fab,
+.mic-fab {
+  display: flex !important;
+  width: var(--fab);
+  height: var(--fab);
+  z-index: 7500;
+}
+
+.chat-fab {
+  bottom: calc(0.7rem + var(--safe-bottom, 0px));
+  left: calc(var(--pad) + var(--safe-left, 0px));
+}
+
+.mic-fab {
+  bottom: calc(0.7rem + var(--safe-bottom, 0px));
+  right: calc(var(--pad) + var(--safe-right, 0px));
+}
+
+#screen-game .game-chat {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: min(44vh, 20rem);
+  transform: translateY(110%);
+  transition: transform 0.22s ease;
+  z-index: 7480;
+  background: rgba(8, 8, 12, 0.97);
+  border-radius: 14px 14px 0 0;
+  padding-bottom: var(--safe-bottom, 0px);
+}
+
+body.chat-open #screen-game .game-chat {
+  transform: translateY(0);
+}
+
+#screen-game .mic-dock {
+  transform: scale(0.82);
+  transform-origin: bottom right;
+  bottom: calc(var(--fab) + 1rem + var(--safe-bottom, 0px));
+  right: calc(var(--pad) + var(--safe-right, 0px));
+  z-index: 7550;
+}
+
+#screen-game .my-role-chip {
+  top: calc(3.6rem + var(--safe-top, 0px));
+  bottom: auto;
+  left: calc(var(--pad) + var(--safe-left, 0px));
+  right: auto;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.55rem;
+}
+
+/* ========== ≥640: slightly roomier phone ========== */
+@media (min-width: 640px) {
+  #screen-lobby .invite-qr-wrap img {
+    width: 84px;
+    height: 84px;
+  }
+
+  #screen-lobby .settings-panel .setting.checks {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  #screen-game .game-players {
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  }
+}
+
+/* ========== ≥861 tablet / desktop ========== */
+@media (min-width: 861px) {
+  #screen-lobby .invite-summary {
+    display: none !important;
+  }
+
+  #screen-lobby .invite-panel[open] .invite-body,
+  #screen-lobby .invite-panel .invite-body {
+    display: flex !important;
+    border-top: none;
+  }
+
+  #screen-lobby .invite-panel {
+    /* on desktop always show body; JS also sets open */
+  }
+
+  #screen-lobby .invite-qr-wrap img {
+    width: 96px;
+    height: 96px;
+  }
+
+  #screen-lobby .invite-url {
+    white-space: normal;
+    word-break: break-all;
+    font-size: 0.78rem;
+  }
+
+  #screen-lobby .lobby-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    grid-template-areas:
+      "players settings"
+      "chat chat";
+  }
+
+  #screen-lobby .players-panel {
+    grid-area: players;
+  }
+
+  #screen-lobby .settings-panel {
+    grid-area: settings;
+    max-height: min(62vh, 640px);
+    overflow-y: auto;
+  }
+
+  #screen-lobby .chat-panel {
+    grid-area: chat;
+  }
+
+  #screen-lobby .chat-panel .chat-log {
+    max-height: min(28vh, 260px);
+  }
+
+  #screen-lobby .lobby-start-bar {
+    max-width: 1100px;
+    margin-inline: auto;
+    border-radius: 12px 12px 0 0;
+    width: calc(100% - 2 * var(--pad));
+  }
+
+  #screen-game .game-body {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    grid-template-rows: 1fr;
+    padding-bottom: var(--pad);
+  }
+
+  #screen-game .game-chat {
+    position: static;
+    transform: none;
+    max-height: none;
+    border-radius: var(--card-r);
+    background: transparent;
+  }
+
+  #screen-game .btn-leave#btn-leave-game {
+    display: inline-flex;
+  }
+
+  #screen-game .leave-fab,
+  .chat-fab,
+  .mic-fab {
+    display: none !important;
+  }
+
+  #screen-game .mic-dock {
+    transform: none;
+  }
+
+  #screen-game .my-role-chip {
+    top: auto;
+    bottom: calc(var(--pad) + var(--safe-bottom, 0px));
+  }
+}
+
+/* ========== ≥1100 desktop wide ========== */
+@media (min-width: 1100px) {
+  #screen-lobby .lobby-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 0.95fr);
+    grid-template-areas: "players settings chat";
+  }
+
+  #screen-lobby .chat-panel .chat-log {
+    max-height: min(50vh, 420px);
+  }
+
+  #screen-home .home-content {
+    width: min(100% - 2 * var(--pad), 420px);
+  }
+}
+
+/* ========== small phone ========== */
+@media (max-width: 400px) {
+  #screen-home .join-row {
+    grid-template-columns: 1fr;
+  }
+
+  #screen-lobby .lobby-start-bar #btn-claim-host {
+    display: none;
+  }
+
+  #screen-lobby .invite-qr-wrap img {
+    width: 64px;
+    height: 64px;
+  }
+
+  #screen-lobby .settings-panel .setting.checks {
+    grid-template-columns: 1fr;
+  }
+
+  #screen-game .game-players {
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  }
+}
+
+/* ========== landscape short ========== */
+@media (max-height: 500px) and (orientation: landscape) {
+  #screen-home .home-tagline,
+  #screen-home .brand-credit {
+    display: none;
+  }
+
+  #screen-home .brand-mafi {
+    font-size: 1.7rem;
+  }
+
+  #screen-home .avatar-picker {
+    max-height: 3.8rem;
+  }
+
+  #screen-home .home-footer {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  #screen-home .home-footer .btn {
+    font-size: 0.65rem;
+    min-height: 2.2rem;
+    padding: 0.25rem;
+  }
+
+  #screen-lobby .invite-panel:not([open]) .invite-summary {
+    padding: 0.35rem 0.6rem;
+  }
+
+  #screen-lobby .invite-url,
+  #screen-lobby .invite-hint {
+    display: none;
+  }
+
+  #screen-lobby .invite-qr-wrap img {
+    width: 48px;
+    height: 48px;
+  }
+
+  #screen-lobby .lobby-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #screen-lobby .chat-panel .chat-log {
+    max-height: min(36vh, 9rem);
+  }
+
+  #screen-lobby .lobby-start-bar {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: "info hint actions";
+    padding: 0.35rem 0.55rem;
+  }
+
+  #screen-lobby .lobby-start-bar #btn-claim-host {
+    display: none;
+  }
+
+  #screen-game .game-body {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    padding-bottom: calc(3.65rem + var(--safe-bottom, 0px));
+  }
+}
+
+/* Loading */
+#screen-loading .loading-wrap {
+  max-width: min(92vw, 400px);
+  margin-inline: auto;
+  padding: var(--pad);
+}
+
+@media (max-width: 480px) {
+  .mafi-logo {
+    width: min(150px, 42vw) !important;
+    height: min(150px, 42vw) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ========== TELEGRAM MINI APP ========== */
+#screen-home .telegram-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(36, 132, 197, 0.22), rgba(10, 20, 40, 0.45));
+  border: 1px solid rgba(96, 165, 250, 0.35);
+  font-size: 0.82rem;
+}
+
+#screen-home .telegram-banner strong {
+  color: #93c5fd;
+}
+
+body.telegram-mode #screen-game .mic-fab,
+body.telegram-mode #screen-game .mic-dock,
+body.telegram-mode #screen-game #dock-mic {
+  display: none !important;
+}
+
+body.telegram-mode #screen-game .game-mobile-dock {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+body.telegram-webapp #screen-home .home-footer .btn-settings-home {
+  display: none;
+}
+
+body.telegram-mode .telegram-only {
+  display: inline-flex !important;
+}
+
+body:not(.telegram-mode) .telegram-only {
+  display: none !important;
+}
+
+#screen-lobby .invite-telegram-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  color: #93c5fd;
+  line-height: 1.45;
+}
+
+body.telegram-create #screen-home .join-row,
+body.telegram-create #screen-home #room-password,
+body.telegram-create #screen-home #as-spectator {
+  display: none !important;
+}
+
+body.telegram-create #screen-home #btn-create {
+  box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.45);
+}
+
+#screen-home .telegram-banner span {
+  opacity: 0.92;
+}

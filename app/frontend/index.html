@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a0f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <title>مافیا | MAFI</title>
+  <link rel="stylesheet" href="/css/style.css?v=31" />
+  <link rel="stylesheet" href="/css/layout.css?v=31" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <!-- Three.js canvas -->
+  <canvas id="bg-canvas"></canvas>
+  <div id="vignette"></div>
+  <div id="fog-layer"></div>
+
+  <!-- ========== LOADING ========== -->
+  <section id="screen-loading" class="screen active">
+    <div class="loading-bg-fx" aria-hidden="true">
+      <div class="loading-smoke s1"></div>
+      <div class="loading-smoke s2"></div>
+      <div class="loading-smoke s3"></div>
+      <div class="loading-sparks" id="loading-sparks"></div>
+    </div>
+    <div class="loading-wrap">
+      <div class="mafi-logo" id="mafi-logo">
+        <div class="logo-aura"></div>
+        <div class="logo-ring ring-outer"></div>
+        <div class="logo-ring ring-1"></div>
+        <div class="logo-ring ring-2"></div>
+        <div class="logo-ring ring-3"></div>
+        <div class="logo-orbit">
+          <span class="orbit-dot d1"></span>
+          <span class="orbit-dot d2"></span>
+          <span class="orbit-dot d3"></span>
+        </div>
+        <div class="logo-core">
+          <div class="logo-shine"></div>
+          <span class="logo-text" data-text="MAFI">MAFI</span>
+          <span class="logo-sub">مافیا</span>
+          <div class="logo-blade"></div>
+        </div>
+        <div class="logo-glow"></div>
+      </div>
+      <p class="loading-credit">Created by <strong>Yaser Mafi</strong></p>
+      <div class="loading-bar-wrap">
+        <div class="loading-bar" id="loading-bar"></div>
+      </div>
+      <p class="loading-hint" id="loading-hint">در حال بیدار کردن شهر...</p>
+      <p class="loading-pct" id="loading-pct">۰٪</p>
+    </div>
+  </section>
+  <!-- لودینگ فوری — قبل از CDN/اسکریپت‌های سنگین تا روی ۰٪ گیر نکند -->
+  <script>
+    (function () {
+      if (window.__mafiLoadingOwned) return;
+      window.__mafiLoadingOwned = true;
+      var FA = "۰۱۲۳۴۵۶۷۸۹";
+      var hints = [
+        "در حال بیدار کردن شهر...",
+        "سایه‌ها جمع می‌شوند...",
+        "نقشه‌ی شب آماده می‌شود...",
+        "گرداننده بیدار می‌شود...",
+        "خون و طلا در هم می‌آمیزند...",
+        "MAFI آماده است...",
+      ];
+      var bar = document.getElementById("loading-bar");
+      var pct = document.getElementById("loading-pct");
+      var hint = document.getElementById("loading-hint");
+      var sparks = document.getElementById("loading-sparks");
+      var duration = 2200;
+      var start = performance.now();
+      if (sparks) {
+        for (var i = 0; i < 20; i++) {
+          var s = document.createElement("span");
+          s.style.left = Math.random() * 100 + "%";
+          s.style.bottom = Math.random() * 20 + "%";
+          s.style.animationDuration = 4 + Math.random() * 6 + "s";
+          s.style.animationDelay = Math.random() * 5 + "s";
+          sparks.appendChild(s);
+        }
+      }
+      function toFa(n) {
+        return String(n).replace(/\d/g, function (d) {
+          return FA[d];
+        });
+      }
+      function finish() {
+        var sc = document.getElementById("screen-loading");
+        if (sc) {
+          sc.style.transition = "opacity 0.45s ease, transform 0.45s ease";
+          sc.style.opacity = "0";
+          sc.style.transform = "scale(1.04)";
+        }
+        setTimeout(function () {
+          if (sc) {
+            sc.classList.remove("active");
+            sc.style.opacity = "";
+            sc.style.transform = "";
+          }
+          var home = document.getElementById("screen-home");
+          if (home) home.classList.add("active");
+          window.__mafiLoadingDone = true;
+          try {
+            window.dispatchEvent(new Event("mafi-loading-done"));
+          } catch (_) {}
+        }, 450);
+      }
+      function frame(now) {
+        var t = Math.min(1, (now - start) / duration);
+        var eased = 1 - Math.pow(1 - t, 2);
+        var p = Math.floor(eased * 100);
+        if (bar) bar.style.width = p + "%";
+        if (pct) pct.textContent = toFa(p) + "٪";
+        if (hint) {
+          var hi = Math.min(hints.length - 1, Math.floor(t * hints.length));
+          hint.textContent = hints[hi];
+        }
+        if (t < 1) requestAnimationFrame(frame);
+        else setTimeout(finish, 120);
+      }
+      requestAnimationFrame(frame);
+    })();
+  </script>
+
+  <!-- ========== HOME ========== -->
+  <section id="screen-home" class="screen">
+    <div class="home-content">
+      <div class="brand-mark">
+        <span class="brand-mafi">MAFI</span>
+        <span class="brand-fa">مافیای کلاسیک</span>
+        <span class="brand-credit">Created by Yaser Mafi</span>
+      </div>
+      <p class="home-tagline">شب تاریک است... چه کسی زنده می‌ماند؟</p>
+
+      <div id="phone-host-banner" class="telegram-banner" hidden>
+        <strong>میزبان این گوشی</strong>
+        <span id="phone-host-address">در حال پیدا کردن آدرس همین شبکه...</span>
+      </div>
+
+      <div id="telegram-banner" class="telegram-banner" hidden>
+        <strong>🎭 نسخه تلگرام MAFI</strong>
+        <span>همان بازی کامل داخل Mini App — دعوت دوستان، گرداننده هوشمند، اعلان نقش در پیام بات</span>
+      </div>
+
+      <div id="invite-join-banner" class="invite-join-banner" hidden>
+        <strong>دعوت به اتاق <span id="invite-join-code">----</span></strong>
+        <span>فقط نام خود را بنویسید و ورود را بزنید — کد از قبل وارد شده. اگر اتاق رمز دارد، رمز را هم وارد کنید.</span>
+      </div>
+
+      <div class="home-forms">
+        <div class="form-card">
+          <label for="player-name">نام نمایشی</label>
+          <input type="text" id="player-name" maxlength="20" placeholder="نام خود را وارد کنید" autocomplete="nickname" />
+        </div>
+
+        <div class="home-actions">
+          <button class="btn btn-gold btn-lg" id="btn-create">
+            <span>ساخت اتاق</span>
+          </button>
+          <div class="join-row">
+            <input type="text" id="room-code" maxlength="6" placeholder="کد اتاق" class="code-input" autocomplete="off" inputmode="text" />
+            <button class="btn btn-red" id="btn-join">ورود</button>
+          </div>
+          <p id="join-hint" class="join-hint" hidden>کد اتاق از لینک/QR پر شده — نام یکتا لازم است.</p>
+          <input type="text" id="room-password" maxlength="32" placeholder="رمز اتاق (اگر دارد)" class="code-input" style="width:100%;margin-top:0.5rem" autocomplete="off" />
+          <div class="avatar-picker" id="avatar-picker"></div>
+          <label class="check-row">
+            <input type="checkbox" id="as-spectator" />
+            <span>ورود به عنوان تماشاگر</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="home-footer">
+        <button class="btn btn-ghost" id="btn-rules-home">قوانین بازی</button>
+        <button class="btn btn-ghost" id="btn-settings-home">تنظیمات</button>
+        <button class="btn btn-ghost" id="btn-profile-home">پروفایل</button>
+        <button class="btn btn-ghost" id="btn-lb-home">رتبه‌بندی</button>
+        <button class="btn btn-ghost" id="btn-friends-refresh">دوستان</button>
+      </div>
+      <ul id="friends-list" class="friends-list muted-line"></ul>
+    </div>
+  </section>
+
+  <!-- ========== LOBBY ========== -->
+  <section id="screen-lobby" class="screen" data-lobby-tab="players">
+    <header class="top-bar">
+      <div class="room-badge">
+        <span>اتاق</span>
+        <strong id="lobby-code">-----</strong>
+        <button class="icon-btn" id="btn-copy-code" title="کپی کد اتاق">⧉</button>
+        <button class="icon-btn" id="btn-copy-link" title="کپی لینک">🔗</button>
+        <button class="icon-btn" id="btn-copy-lan" title="کپی لینک شبکه">📶</button>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" id="btn-mute" title="صدا">🔊</button>
+        <button class="icon-btn" id="btn-fullscreen" title="تمام‌صفحه">⛶</button>
+        <button class="icon-btn" id="btn-rules" title="قوانین">؟</button>
+        <button class="btn btn-leave btn-sm" id="btn-leave-lobby" title="خروج از اتاق">خروج</button>
+      </div>
+    </header>
+
+    <details id="invite-panel" class="invite-panel">
+      <summary class="invite-summary">
+        <span class="invite-summary-main">دعوت دوستان · QR</span>
+        <span class="invite-summary-sub invite-host-only">ضربه برای باز/بسته</span>
+        <span class="invite-summary-sub invite-guest-only">لینک و کد اتاق</span>
+      </summary>
+      <div class="invite-body">
+        <div class="invite-qr-wrap invite-host-only">
+          <img id="invite-qr" alt="QR دعوت" width="96" height="96" />
+        </div>
+        <div class="invite-meta">
+          <p class="invite-title invite-host-only">اسکن با موبایل مهمان</p>
+          <p class="invite-title invite-guest-only">کد اتاق: <strong id="invite-guest-code">-----</strong></p>
+          <p class="invite-hint invite-host-only">اسکن با مرورگر موبایل / آیفون — بدون نیاز به وای‌فای مشترک</p>
+          <p id="invite-password-notice" class="invite-password-notice" hidden>🔒 این اتاق رمز دارد — از میزبان بپرسید</p>
+          <code id="invite-lan-url" class="invite-url">در حال خواندن IP...</code>
+          <div class="invite-actions">
+            <button type="button" class="btn btn-gold btn-sm invite-host-only telegram-only" id="btn-share-telegram" hidden>📨 دعوت در تلگرام</button>
+            <button type="button" class="btn btn-gold btn-sm" id="btn-share-lan">اشتراک لینک</button>
+            <button type="button" class="btn btn-gold btn-sm" id="btn-copy-lan-text">کپی لینک</button>
+            <button type="button" class="btn btn-ghost btn-sm invite-host-only" id="btn-refresh-qr">بروز QR</button>
+          </div>
+          <p id="invite-telegram-hint" class="invite-telegram-hint telegram-only" hidden>
+            دوستان لینک تلگرام را بزنند → Mini App باز می‌شود → نام بزنند → ورود
+          </p>
+          <p id="invite-online" class="invite-online" hidden></p>
+        </div>
+      </div>
+    </details>
+
+    <div class="lobby-main">
+    <nav class="lobby-tabs" id="lobby-tabs" aria-label="بخش‌های لابی">
+      <button type="button" class="lobby-tab active" data-lobby-tab="players">بازیکنان</button>
+      <button type="button" class="lobby-tab" data-lobby-tab="settings">تنظیمات</button>
+      <button type="button" class="lobby-tab" data-lobby-tab="chat">چت</button>
+    </nav>
+    <div class="lobby-grid">
+      <div class="panel players-panel lobby-pane" data-lobby-pane="players">
+        <h2>بازیکنان <span id="player-count">0</span>/۱۵</h2>
+        <div id="players-list" class="players-list"></div>
+      </div>
+
+      <div class="panel settings-panel lobby-pane" id="settings-panel" data-lobby-pane="settings">
+        <h2>تنظیمات اتاق</h2>
+        <div class="setting">
+          <label>تعداد مافیا</label>
+          <input type="range" id="set-mafia" min="1" max="5" value="2" />
+          <span id="set-mafia-val">۲</span>
+        </div>
+        <div class="setting checks">
+          <label><input type="checkbox" id="set-doctor" checked /> دکتر</label>
+          <label><input type="checkbox" id="set-detective" checked /> کارآگاه</label>
+          <label><input type="checkbox" id="set-sniper" /> اسنایپر <small>(۸+)</small></label>
+          <label><input type="checkbox" id="set-godfather" /> رئیس مافیا <small>(۱۰+)</small></label>
+          <label><input type="checkbox" id="set-mayor" /> شهردار <small>(۱۰+)</small></label>
+          <label><input type="checkbox" id="set-bodyguard" /> بادیگارد <small>(۱۱+)</small></label>
+          <label><input type="checkbox" id="set-silencer" /> سایلنسر <small>(۱۳+)</small></label>
+          <label><input type="checkbox" id="set-psych" /> روان‌پزشک <small>(۸+)</small></label>
+          <label><input type="checkbox" id="set-killer" /> جانی <small>(۹+)</small></label>
+          <label><input type="checkbox" id="set-sacrifice" /> فداکار <small>(۸+)</small></label>
+          <label><input type="checkbox" id="set-reporter" /> خبرنگار <small>(۱۰+)</small></label>
+          <label><input type="checkbox" id="set-natasha" /> ناتاشا <small>(۱۱+)</small></label>
+          <label><input type="checkbox" id="set-joker" /> جوکر <small>(۱۰+)</small></label>
+          <label><input type="checkbox" id="set-vigilante" /> شبه‌نظامی <small>(۹+)</small></label>
+        </div>
+        <div class="setting">
+          <label>حالت بازی</label>
+          <select id="set-mode">
+            <option value="classic">کلاسیک</option>
+            <option value="fast">سریع</option>
+            <option value="last_stand">آخرین بازمانده</option>
+            <option value="text_only">فقط چت (بدون ویس)</option>
+            <option value="ranked">رتبه‌دار</option>
+            <option value="tournament">تورنمنت</option>
+          </select>
+        </div>
+        <div class="setting">
+          <label>سطح بات</label>
+          <select id="set-bot-diff">
+            <option value="easy">آسان</option>
+            <option value="normal" selected>معمولی</option>
+            <option value="hard">سخت</option>
+          </select>
+        </div>
+        <div class="setting">
+          <label>گوینده AI</label>
+          <select id="set-narrator-voice">
+            <option value="farid">فرید — مردانه واضح</option>
+            <option value="farid_deep">فرید — بم و سنگین</option>
+            <option value="farid_cinema">فرید — سینمایی</option>
+            <option value="dilara">دلارا — زنانه واضح</option>
+            <option value="dilara_soft">دلارا — نرم</option>
+          </select>
+        </div>
+        <div class="setting">
+          <label>سرعت گوینده</label>
+          <select id="set-narrator-rate">
+            <option value="slow">آهسته</option>
+            <option value="normal" selected>عادی</option>
+            <option value="fast">سریع</option>
+          </select>
+        </div>
+        <label class="check-row" style="justify-content:flex-start;margin-bottom:0.5rem">
+          <input type="checkbox" id="set-tournament" />
+          <span>حالت تورنمنت</span>
+        </label>
+        <label class="check-row" style="justify-content:flex-start;margin-bottom:0.5rem">
+          <input type="checkbox" id="set-ranked" />
+          <span>رتبه‌دار فصلی</span>
+        </label>
+        <div class="setting">
+          <label>رمز اتاق (اختیاری)</label>
+          <input type="text" id="set-password" maxlength="32" placeholder="خالی = عمومی" autocomplete="off" />
+        </div>
+        <div class="setting">
+          <label>تأخیر تماشاگر (ثانیه — ضد استریم)</label>
+          <input type="range" id="set-spectator-delay" min="0" max="120" value="30" step="5" />
+          <span id="set-spectator-delay-val">۳۰</span>
+        </div>
+        <div class="host-tools" id="host-tools" style="display:none;gap:0.5rem;flex-wrap:wrap;margin-top:0.75rem">
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-add-bots">+ بات (۲)</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-remove-bots">حذف بات</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-host-preview">پیش‌نمایش گوینده</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-save-template">ذخیره قالب</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-load-templates">قالب‌ها</button>
+        </div>
+        <label class="check-row" style="justify-content:flex-start;margin-bottom:0.75rem">
+          <input type="checkbox" id="set-auto-roles" checked />
+          <span>تنظیم خودکار نقش با تعداد بازیکن</span>
+        </label>
+        <div class="unlocked-roles" id="unlocked-roles"></div>
+        <div class="setting">
+          <label>زمان شب (ثانیه)</label>
+          <input type="range" id="set-night" min="15" max="90" value="30" step="5" />
+          <span id="set-night-val">۳۰</span>
+        </div>
+        <div class="setting">
+          <label>زمان بحث</label>
+          <input type="range" id="set-discuss" min="30" max="180" value="90" step="10" />
+          <span id="set-discuss-val">۹۰</span>
+        </div>
+        <div class="setting">
+          <label>زمان هر نوبت صحبت</label>
+          <input type="range" id="set-speak" min="15" max="60" value="30" step="5" />
+          <span id="set-speak-val">۳۰</span>
+        </div>
+        <div class="setting">
+          <label>زمان رأی</label>
+          <input type="range" id="set-vote" min="20" max="90" value="45" step="5" />
+          <span id="set-vote-val">۴۵</span>
+        </div>
+        <div class="suspicion-box" id="suspicion-box" style="display:none">
+          <h3>لاگ مشکوک</h3>
+          <ul id="suspicion-list"></ul>
+        </div>
+      </div>
+
+      <div class="panel chat-panel lobby-pane" data-lobby-pane="chat">
+        <h2>چت لابی</h2>
+        <div id="lobby-chat" class="chat-log"></div>
+        <form id="lobby-chat-form" class="chat-form">
+          <input type="text" id="lobby-chat-input" maxlength="200" placeholder="پیام..." autocomplete="off" />
+          <button type="submit" class="btn btn-gold">ارسال</button>
+        </form>
+      </div>
+    </div>
+    </div>
+
+    <div class="lobby-start-bar">
+      <div class="lobby-start-info">
+        <span id="host-label">سازنده: —</span>
+        <span id="ready-label">۰/۶ آماده</span>
+      </div>
+      <div class="lobby-start-actions">
+        <button class="btn btn-gold btn-lg" id="btn-start" disabled>شروع بازی</button>
+        <button class="btn btn-ghost btn-sm" id="btn-claim-host">من سازنده‌ام</button>
+      </div>
+      <p class="hint" id="start-hint">حداقل ۶ بازیکن لازم است</p>
+    </div>
+  </section>
+
+  <!-- ========== GAME ========== -->
+  <section id="screen-game" class="screen">
+    <header class="top-bar game-bar">
+      <div class="phase-badge" id="phase-badge">شب</div>
+      <div class="timer-ring" id="timer-wrap">
+        <svg viewBox="0 0 36 36">
+          <path class="timer-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          <path class="timer-fg" id="timer-fg" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+        </svg>
+        <span id="timer-text">۳۰</span>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" id="btn-mute-g">🔊</button>
+        <button class="icon-btn" id="btn-skip" title="رد کردن فاز" style="display:none">⏭</button>
+        <button class="btn btn-leave btn-sm" id="btn-leave-game" title="خروج از بازی">خروج از بازی</button>
+      </div>
+    </header>
+
+    <button type="button" class="leave-fab" id="btn-leave-fab" title="خروج از بازی">
+      <span class="leave-fab-x">✕</span>
+      <span class="leave-fab-label">خروج</span>
+    </button>
+
+    <nav class="game-mobile-dock" id="game-mobile-dock" aria-label="کنترل بازی">
+      <button type="button" class="dock-btn" id="dock-chat" title="چت">💬<span>چت</span></button>
+      <button type="button" class="dock-btn" id="dock-role" title="نقش من">🎭<span>نقش</span></button>
+      <button type="button" class="dock-btn" id="dock-mic" title="مایک">🎤<span>مایک</span></button>
+      <button type="button" class="dock-btn dock-leave" id="dock-leave" title="خروج">✕<span>خروج</span></button>
+    </nav>
+
+    <!-- Narrator -->
+    <div class="narrator" id="narrator">
+      <div class="narrator-avatar">🎙</div>
+      <div class="narrator-body">
+        <span class="narrator-label">گرداننده</span>
+        <p id="narrator-text"></p>
+      </div>
+    </div>
+
+    <!-- Speak turn bar -->
+    <div class="speak-bar" id="speak-bar" style="display:none">
+      <div class="speak-who">
+        <span class="speak-av" id="speak-av">👤</span>
+        <div>
+          <div class="speak-title">نوبت صحبت</div>
+          <div class="speak-name" id="speak-name">—</div>
+        </div>
+      </div>
+      <div class="speak-timer-wrap">
+        <div class="speak-timer-track">
+          <div class="speak-timer-fill" id="speak-timer-fill"></div>
+        </div>
+        <span id="speak-timer-num">۳۰</span>
+      </div>
+      <div class="speak-meta">
+        <span id="speak-progress">۱ از ۶</span>
+        <button class="btn btn-challenge btn-sm" id="btn-challenge">⚡ چالش</button>
+        <button class="btn btn-ghost btn-sm" id="btn-skip-speak" style="display:none">پایان نوبت</button>
+      </div>
+    </div>
+
+    <!-- Challenge composer (for everyone) -->
+    <div class="challenge-sheet" id="challenge-sheet" style="display:none">
+      <div class="challenge-sheet-inner">
+        <h3>درخواست چالش</h3>
+        <p class="challenge-hint">۱۰ یا ۲۰ ثانیه فرصت حرف زدن از صاحب نوبت بگیر</p>
+        <div class="challenge-opts">
+          <button type="button" class="chip active" data-sec="10">۱۰ ثانیه</button>
+          <button type="button" class="chip" data-sec="20">۲۰ ثانیه</button>
+        </div>
+        <div class="challenge-opts">
+          <button type="button" class="chip" data-pos="before">قبل از ادامه نوبت</button>
+          <button type="button" class="chip active" data-pos="after">بعد از این نوبت</button>
+        </div>
+        <div class="challenge-actions">
+          <button class="btn btn-gold" id="btn-challenge-send">ارسال چالش</button>
+          <button class="btn btn-ghost" id="btn-challenge-cancel">بستن</button>
+        </div>
+        <p class="hint" id="challenge-left-hint">۲ چالش باقی‌مانده امروز</p>
+      </div>
+    </div>
+
+    <!-- Challenge decision (for current speaker) -->
+    <div class="challenge-decide" id="challenge-decide" style="display:none">
+      <div class="challenge-decide-inner">
+        <div class="cd-head">
+          <span id="cd-avatar">⚡</span>
+          <div>
+            <strong id="cd-name">بازیکن</strong>
+            <p id="cd-detail">۱۰ ثانیه بعد از نوبت</p>
+          </div>
+        </div>
+        <div class="challenge-opts" id="cd-adjust">
+          <button type="button" class="chip active" data-sec="10">۱۰ث</button>
+          <button type="button" class="chip" data-sec="20">۲۰ث</button>
+          <button type="button" class="chip" data-pos="before">قبل</button>
+          <button type="button" class="chip active" data-pos="after">بعد</button>
+        </div>
+        <div class="challenge-actions">
+          <button class="btn btn-gold" id="btn-challenge-accept">قبول</button>
+          <button class="btn btn-red" id="btn-challenge-reject">رد</button>
+        </div>
+        <div class="cd-auto">
+          <div class="cd-auto-bar" id="cd-auto-bar"></div>
+          <span>پذیرش خودکار تا ۸ ثانیه...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mic dock -->
+    <div class="mic-dock" id="mic-dock">
+      <span class="mic-live-dot" id="mic-live-dot"></span>
+      <button type="button" class="mic-btn off" id="btn-mic">
+        <span>🎙</span><small>فعال‌سازی مایک</small>
+      </button>
+      <span class="mic-status" id="mic-status">مایک خاموش</span>
+    </div>
+
+    <!-- My role chip -->
+    <button class="my-role-chip" id="my-role-chip" style="display:none">
+      <span id="my-role-icon">👤</span>
+      <span id="my-role-name">نقش</span>
+    </button>
+
+    <div class="game-body">
+      <div class="game-players" id="game-players"></div>
+
+      <div class="game-side">
+        <div class="action-panel" id="action-panel" style="display:none">
+          <h3 id="action-title">انتخاب کنید</h3>
+          <div id="action-targets" class="action-targets"></div>
+          <button class="btn btn-ghost btn-sm" id="btn-skip-action" style="display:none">رد کردن</button>
+        </div>
+
+        <div class="panel chat-panel game-chat">
+          <div class="chat-tabs">
+            <button class="tab active" data-tab="public">عمومی</button>
+            <button class="tab" data-tab="mafia" id="tab-mafia" style="display:none">مافیا</button>
+          </div>
+          <div id="game-chat" class="chat-log"></div>
+          <div id="mafia-chat" class="chat-log" style="display:none"></div>
+          <form id="game-chat-form" class="chat-form">
+            <input type="text" id="game-chat-input" maxlength="200" placeholder="پیام..." autocomplete="off" />
+            <button type="submit" class="btn btn-gold">ارسال</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== ROLE CARD OVERLAY ========== -->
+  <div id="role-overlay" class="overlay">
+    <div class="card-stage">
+      <div class="role-card" id="role-card">
+        <div class="card-face card-back">
+          <div class="card-back-pattern">
+            <span>MAFI</span>
+          </div>
+        </div>
+        <div class="card-face card-front" id="card-front">
+          <div class="card-ornament top"></div>
+          <div class="card-icon" id="card-icon">🎭</div>
+          <h2 id="card-role-name">مافیا</h2>
+          <p id="card-role-desc"></p>
+          <div class="card-ornament bot"></div>
+        </div>
+      </div>
+      <p class="card-hint">کارت را لمس کنید تا باز شود</p>
+    </div>
+  </div>
+
+  <!-- ========== END OVERLAY ========== -->
+  <div id="end-overlay" class="overlay">
+    <div class="end-content">
+      <h1 id="end-title">پیروزی</h1>
+      <p id="end-sub"></p>
+      <div id="end-cards" class="end-cards"></div>
+      <div class="replay-box" id="replay-box">
+        <h3>ریپلی شب و رأی</h3>
+        <ul id="replay-list"></ul>
+      </div>
+      <button class="btn btn-gold btn-lg" id="btn-rematch" style="display:none">بازی مجدد</button>
+    </div>
+  </div>
+
+  <div id="death-flash" class="death-flash" aria-hidden="true"></div>
+  <button type="button" id="btn-admin-entry" class="admin-entry" style="display:none" title="پنل پشت‌صحنه" aria-label="پنل پشت‌صحنه">
+    <svg class="admin-entry-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c3.5 0 6.5 2.2 7.6 5.5C21.8 9.2 22 10.6 22 12c0 4.2-2.6 7.8-6.3 9.3-.4.15-.8.2-1.2.2-1.2 0-2.3-.5-3.1-1.3L12 22l-.4-.8c-.8-.8-1.9-1.3-3.1-1.3-.4 0-.8-.05-1.2-.2C3.6 19.8 1 16.2 1 12c0-1.4.2-2.8.4-4.5C2.5 4.2 5.5 2 9 2c1 0 2 .2 3 .6C13 2.2 14 2 15 2h-3z" fill="currentColor" opacity=".92"/><circle cx="9" cy="11" r="1.35" fill="#07070c"/><circle cx="15" cy="11" r="1.35" fill="#07070c"/></svg>
+  </button>
+  <button type="button" id="admin-min-chip" class="admin-min-chip" style="display:none" title="باز کردن پنل">🎭 پشت‌صحنه</button>
+  <button type="button" id="btn-chat-toggle" class="chat-fab" style="display:none">چت</button>
+  <button type="button" id="btn-mic-fab" class="mic-fab" style="display:none">🎤</button>
+
+  <div id="admin-auth-modal" class="admin-modal" style="display:none">
+    <div class="admin-modal-card">
+      <div class="admin-modal-icon" aria-hidden="true">🎭</div>
+      <h3>پنل پشت‌صحنه</h3>
+      <p class="admin-modal-hint">فقط برای گرداننده — نقش‌ها و جریان بازی</p>
+      <input type="password" id="admin-pass" placeholder="رمز عبور (mafi)" autocomplete="off" />
+      <div class="admin-modal-actions">
+        <button type="button" class="btn btn-gold btn-sm" id="btn-admin-login">ورود</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-admin-cancel">انصراف</button>
+      </div>
+      <p class="admin-err" id="admin-err"></p>
+    </div>
+  </div>
+
+  <aside id="admin-panel" class="admin-panel" style="display:none" aria-hidden="true">
+    <header class="admin-head">
+      <div>
+        <strong>🎭 پشت‌صحنه MAFI</strong>
+        <span id="admin-meta" class="admin-meta"></span>
+      </div>
+      <div class="admin-head-btns">
+        <button type="button" id="btn-admin-copy" title="کپی نقش‌ها">⎘</button>
+        <button type="button" id="btn-admin-export" title="دانلود JSON">↓</button>
+        <button type="button" id="btn-admin-refresh" title="تازه‌سازی">↻</button>
+        <button type="button" id="btn-admin-min" title="مینیمایز">—</button>
+        <button type="button" id="btn-admin-close" title="بستن">×</button>
+      </div>
+    </header>
+    <div class="admin-body" id="admin-body">
+      <div id="admin-live" class="admin-live"></div>
+      <div class="admin-tabs">
+        <button type="button" class="admin-tab on" data-atab="roles">نقش‌ها</button>
+        <button type="button" class="admin-tab" data-atab="timeline">جریان بازی</button>
+        <button type="button" class="admin-tab" data-atab="suspect">لاگ</button>
+        <button type="button" class="admin-tab" data-atab="whisper">پیام</button>
+      </div>
+      <label class="admin-filter">
+        <input type="checkbox" id="admin-only-mafia" />
+        فقط مافیا را هایلایت/فیلتر کن
+      </label>
+      <div id="admin-roles" class="admin-roles"></div>
+      <div id="admin-timeline" class="admin-timeline" style="display:none"></div>
+      <div id="admin-suspect" class="admin-suspect" style="display:none"></div>
+      <div id="admin-whisper" class="admin-whisper" style="display:none">
+        <select id="admin-whisper-target"></select>
+        <input type="text" id="admin-whisper-text" maxlength="120" placeholder="پیام خصوصی به بازیکن..." />
+        <button type="button" class="btn btn-gold btn-sm" id="btn-admin-whisper">ارسال مخفی</button>
+      </div>
+    </div>
+  </aside>
+
+  <div id="modal-profile" class="modal">
+    <div class="modal-box">
+      <button class="modal-close" data-close>&times;</button>
+      <h2>پروفایل</h2>
+      <div id="profile-body" class="rules-body"></div>
+      <h3 class="muted-line">تاریخچه بازی</h3>
+      <ul id="match-history-list" class="match-history-list"></ul>
+      <h3>Season Pass</h3>
+      <p id="season-pass-xp" class="muted-line">XP: 0</p>
+      <div id="season-pass-body" class="season-pass-body"></div>
+      <h3>کلن</h3>
+      <div id="clan-body"></div>
+      <div class="clan-actions" style="display:flex;gap:0.35rem;flex-wrap:wrap;margin:0.5rem 0">
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-create-clan">ساخت کلن</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-join-clan">پیوستن</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-leave-clan">ترک</button>
+      </div>
+      <h3>رتبه‌بندی فصل</h3>
+      <ol id="leaderboard-list"></ol>
+    </div>
+  </div>
+
+  <!-- ========== MODALS ========== -->
+  <div id="modal-rules" class="modal">
+    <div class="modal-box">
+      <button class="modal-close" data-close>&times;</button>
+      <h2>قوانین مافیای کلاسیک</h2>
+      <div class="rules-body">
+        <h3>نقش‌ها</h3>
+        <ul>
+          <li><strong>شهروند:</strong> رأی می‌دهد و سعی می‌کند مافیا را پیدا کند.</li>
+          <li><strong>مافیا:</strong> شب‌ها یک نفر را می‌کشد.</li>
+          <li><strong>دکتر:</strong> هر شب یک نفر را نجات می‌دهد.</li>
+          <li><strong>کارآگاه:</strong> هر شب هویت یک نفر را استعلام می‌گیرد.</li>
+          <li><strong>اسنایپر (۸+):</strong> یک‌بار شلیک؛ اشتباه = مرگ خودش.</li>
+          <li><strong>رئیس مافیا (۱۰+):</strong> کارآگاه او را شهروند می‌بیند.</li>
+          <li><strong>شهردار (۱۰+):</strong> رأی دو برابر.</li>
+          <li><strong>بادیگارد (۱۱+):</strong> محافظت؛ اگر حمله شود خودش می‌میرد.</li>
+          <li><strong>سایلنسر (۱۳+):</strong> مافیا؛ یک نفر را برای روز بعد ساکت می‌کند.</li>
+          <li><strong>روان‌پزشک (۸+):</strong> یک‌بار نقش شب کسی را بلاک می‌کند.</li>
+          <li><strong>جانی (۹+):</strong> مستقل؛ شب می‌کشد؛ برد تنهایی.</li>
+          <li><strong>فداکار (۸+):</strong> یک‌بار جای هدف مافیا می‌میرد.</li>
+          <li><strong>خبرنگار (۱۰+):</strong> صبح سرنخ عمومی می‌دهد.</li>
+          <li><strong>ناتاشا (۱۱+):</strong> مافیا؛ کسی را مجذوب/ساکت می‌کند.</li>
+        </ul>
+        <h3>جریان بازی</h3>
+        <ul>
+          <li>شب: نقش‌ها به نوبت عمل می‌کنند.</li>
+          <li>صبح: نتیجه شب + سرنخ خبرنگار.</li>
+          <li>بحث / چالش / دفاع نهایی / رأی اعتماد (تورنمنت).</li>
+          <li>رأی‌گیری اعدام؛ وتوی شهردار یک‌بار.</li>
+        </ul>
+        <h3>شرط پیروزی</h3>
+        <ul>
+          <li><strong>شهروندان:</strong> وقتی همه مافیاها حذف شوند.</li>
+          <li><strong>مافیا:</strong> وقتی تعداد مافیا ≥ بقیه زنده باشد.</li>
+          <li><strong>جانی:</strong> وقتی تنها بازمانده باشد.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-settings" class="modal">
+    <div class="modal-box modal-box-wide">
+      <button class="modal-close" data-close>&times;</button>
+      <h2>تنظیمات</h2>
+      <div class="setting">
+        <label>تم بصری</label>
+        <div class="theme-picks" id="theme-picks">
+          <button type="button" class="theme-chip on" data-theme="classic">طلایی کلاسیک</button>
+          <button type="button" class="theme-chip" data-theme="blood">خون‌قرمز</button>
+          <button type="button" class="theme-chip" data-theme="neon">نئون شب</button>
+          <button type="button" class="theme-chip" data-theme="city">شهر شب</button>
+          <button type="button" class="theme-chip" data-theme="prison">زندان</button>
+          <button type="button" class="theme-chip" data-theme="school">مدرسه</button>
+        </div>
+        <label class="check-row"><input type="checkbox" id="set-battery" /> حالت کم‌مصرف (باتری)</label>
+        <div class="setting">
+          <label>دسترسی‌پذیری</label>
+          <select id="set-a11y">
+            <option value="">عادی</option>
+            <option value="large">متن بزرگ</option>
+            <option value="contrast">کنtrast بالا</option>
+          </select>
+        </div>
+        <label class="check-row"><input type="checkbox" id="set-ptt" /> فشاری صحبت کن (PTT)</label>
+      </div>
+      <div class="setting">
+        <label>کیفیت گرافیک</label>
+        <select id="gfx-quality">
+          <option value="high">زیاد</option>
+          <option value="medium" selected>متوسط</option>
+          <option value="low">کم</option>
+        </select>
+      </div>
+      <div class="setting">
+        <label>موسیقی</label>
+        <input type="range" id="vol-music" min="0" max="100" value="40" />
+      </div>
+      <div class="setting">
+        <label>افکت‌ها</label>
+        <input type="range" id="vol-sfx" min="0" max="100" value="60" />
+      </div>
+      <div class="setting">
+        <label>صدای گرداننده</label>
+        <input type="range" id="vol-voice" min="0" max="100" value="80" />
+      </div>
+      <div class="setting">
+        <label>پیش‌نمایش گوینده</label>
+        <select id="preview-voice">
+          <option value="farid">فرید — واضح</option>
+          <option value="farid_deep">فرید — بم</option>
+          <option value="farid_cinema">فرید — سینمایی</option>
+          <option value="dilara">دلارا — واضح</option>
+          <option value="dilara_soft">دلارا — نرم</option>
+        </select>
+        <button type="button" class="btn btn-gold btn-sm" id="btn-preview-voice" style="margin-top:0.5rem;width:100%">پخش نمونه</button>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="btn-install-pwa" style="display:none;width:100%;margin-top:0.75rem">نصب مثل اپ</button>
+    </div>
+  </div>
+
+  <div id="modal-replay" class="modal">
+    <div class="modal-box modal-wide">
+      <button class="modal-close" data-close>&times;</button>
+      <h2>بازپخش بازی</h2>
+      <div id="replay-body"></div>
+    </div>
+  </div>
+
+  <div id="modal-leaderboard" class="modal">
+    <div class="modal-box">
+      <button class="modal-close" data-close>&times;</button>
+      <h2>رتبه‌بندی فصلی</h2>
+      <p class="muted-line" id="lb-season">فصل ۲۰۲۶-S1</p>
+      <ol id="leaderboard-list-home" class="lb-list"></ol>
+    </div>
+  </div>
+
+  <div id="vote-cinematic" class="vote-cinematic" aria-hidden="true"></div>
+
+  <!-- Toast -->
+  <div id="toasts"></div>
+  <div id="live-region" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <script defer src="/js/vendor/socket.io.min.js"></script>
+  <script defer src="/js/vendor/three.min.js"></script>
+  <script defer src="/js/audio.js?v=31"></script>
+  <script defer src="/js/voice.js?v=31"></script>
+  <script defer src="/js/scene3d.js?v=31"></script>
+  <script defer src="/js/app.js?v=31"></script>
+  <script defer src="/js/mafi-extras.js?v=31"></script>
+  <script defer src="/js/mafi-pro.js?v=31"></script>
+  <script>
+    (async function () {
+      if (!("serviceWorker" in navigator)) return;
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for (const r of regs) await r.unregister();
+        if (window.caches) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map((k) => caches.delete(k)));
+        }
+      } catch (_) {}
+      navigator.serviceWorker.register("/sw.js?v=28").catch(() => {});
+    })();
+  </script>
+</body>
+</html>

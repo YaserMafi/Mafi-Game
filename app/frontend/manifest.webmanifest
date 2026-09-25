@@ -1,0 +1,28 @@
+{
+  "name": "MAFI مافیا",
+  "short_name": "MAFI",
+  "description": "مافیای کلاسیک آنلاین فارسی — با گوینده AI",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07070c",
+  "theme_color": "#0a0a0f",
+  "lang": "fa",
+  "dir": "rtl",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

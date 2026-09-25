@@ -1,0 +1,36 @@
+# Render.com — Web Service (Docker)
+# 1. Push repo to GitHub
+# 2. render.com → New → Web Service → connect repo
+# 3. Runtime: Docker
+# 4. Env: MAFI_PUBLIC_URL = https://your-service.onrender.com
+# 5. Env: SUPABASE_* + optional Telegram vars
+
+services:
+  - type: web
+    name: mafi-game
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: MAFI_HOST
+        value: 0.0.0.0
+      - key: MAFI_PORT
+        value: 8000
+      - key: MAFI_PUBLIC_URL
+        sync: false
+      - key: MAFI_WEBAPP_URL
+        fromService:
+          type: web
+          name: mafi-game
+          property: host
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_BOT_USERNAME
+        sync: false
