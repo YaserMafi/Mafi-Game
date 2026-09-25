@@ -1273,7 +1273,7 @@ def _ngrok_https() -> Optional[str]:
 
 def _public_https() -> Optional[str]:
     """Cloud URL (Render/VPS) preferred over ephemeral ngrok for QR invites."""
-    for key in ("MAFI_PUBLIC_URL", "MAFI_WEBAPP_URL"):
+    for key in ("MAFI_PUBLIC_URL", "MAFI_WEBAPP_URL", "RENDER_EXTERNAL_URL"):
         raw = (os.environ.get(key) or "").strip().rstrip("/")
         if not raw:
             continue
@@ -1281,6 +1281,9 @@ def _public_https() -> Optional[str]:
             continue
         if raw.startswith("https://") or raw.startswith("http://"):
             return raw
+    host = (os.environ.get("RENDER_EXTERNAL_HOSTNAME") or "").strip().rstrip("/")
+    if host and not _is_placeholder_public_url(host):
+        return "https://" + host
     return _ngrok_https()
 
 

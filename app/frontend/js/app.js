@@ -703,10 +703,12 @@
     $("#btn-copy-link").onclick = () => {
       const code = state?.code;
       if (!code) return toast("کد اتاق آماده نیست", "warn");
+      const shown = $("#invite-lan-url")?.dataset?.url;
       const url =
+        (shown && !shown.includes("...") ? shown : "") ||
         telegramDeepLink(code) ||
         telegramWebAppInviteUrl(code) ||
-        `${location.origin}?room=${code}&tg=1`;
+        `${location.origin}/?room=${encodeURIComponent(code)}`;
       copyText(url).then(
         () => toast("لینک دعوت کپی شد", "success"),
         () => toast(url, "info")
@@ -1257,7 +1259,10 @@
       window.matchMedia("(max-width: 860px)").matches ||
       window.matchMedia("(max-height: 500px) and (orientation: landscape)").matches;
     const androidHost = new URLSearchParams(location.search).get("source") === "android-host";
-    if (isHost && (androidHost || !narrow)) panel.setAttribute("open", "");
+    const cloudPlay =
+      new URLSearchParams(location.search).get("source") === "cloud" ||
+      /\.onrender\.com$/i.test(location.hostname);
+    if (isHost && (androidHost || cloudPlay || !narrow)) panel.setAttribute("open", "");
     else panel.removeAttribute("open");
   }
 
@@ -1311,12 +1316,12 @@
         /your-service|your-cloud|your-domain|example\.com|placeholder|changeme/i.test(
           cloudRaw
         );
-      const cloud = cloudBad ? "" : cloudRaw;
-      // Phone host → always LAN QR (guests on same Wi‑Fi).
-      // PC/cloud → prefer public HTTPS (Render/ngrok) so guests need no LAN.
+      const cloud = cloudBad || !/^https:\/\//i.test(cloudRaw) ? "" : cloudRaw.replace(/\/$/, "");
+      const onRender = /\.onrender\.com$/i.test(location.hostname);
+      const pageHttps = location.protocol === "https:" && !isLoopback;
       let base = "";
-      if (isCloudPlay) {
-        base = location.origin;
+      if (isCloudPlay || onRender || pageHttps) {
+        base = cloud || location.origin;
       } else if (!isAndroidHost && cloud) {
         base = cloud;
       } else {
@@ -1328,6 +1333,16 @@
         }
         if (!base && cloud) base = cloud;
         if (!base) base = net.local || location.origin;
+      }
+      if (
+        (isCloudPlay || onRender || pageHttps) &&
+        /127\.0\.0\.1|localhost|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\./i.test(String(base))
+      ) {
+        base = location.origin;
+      }
+      const hint = document.querySelector(".invite-hint.invite-host-only");
+      if (hint && (isCloudPlay || onRender || pageHttps)) {
+        hint.textContent = "مهمان اپ لازم ندارد. همین لینک یا QR را با اینترنت خودش باز می‌کند.";
       }
       const tgInvite = telegramWebAppInviteUrl(code);
       const tgDeep = telegramDeepLink(code);
